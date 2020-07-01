@@ -1,4 +1,4 @@
-# spring-on-quarkus project
+# spring-on-quarkus-demo project
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 This project has been used to present Quarkus in several conferences and meetups.
@@ -15,7 +15,7 @@ Generate project by running the following command
 ```bash
 mvn io.quarkus:quarkus-maven-plugin:1.5.2.Final:create \
     -DprojectGroupId=org.acme.spring.web \
-    -DprojectArtifactId=spring-on-quarkus \
+    -DprojectArtifactId=spring-on-quarkus-demo \
     -DclassName="org.acme.spring.web.GreetingController" \
     -Dpath="/greeting" \
     -Dextensions="spring-web,resteasy-jsonb"
@@ -23,7 +23,7 @@ mvn io.quarkus:quarkus-maven-plugin:1.5.2.Final:create \
 ```
 Navigate to the directory and launch the application
 ```bash
-cd spring-on-quarkus
+cd spring-on-quarkus-demo
 mvn compile quarkus:dev
 ```
 1. Open browser to http://localhost:8080
@@ -180,17 +180,17 @@ mvn compile quarkus:dev
 ### Add needed quarkus extensions dependencies
 
 1. Open the `pom.xml` and add the `quarkus-spring-data-jpa` and `quarkus-jdbc-postgresql`
-```
-<dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-spring-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql</artifactId>
-    </dependency>
-
-```
+    ```
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-spring-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+    
+    ```
 
 You can also add the extensions to your project by running the following command in your project base directory
 
@@ -200,205 +200,217 @@ You can also add the extensions to your project by running the following command
 
 ### Create entity, repository and controller classes
 
-Create class `Book` in the `org.acme.spring.web` package with the following content:
-
-```
-package org.acme.spring.web;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
-public class Book {
-
-    @Id
-    private Integer id;
-
-    private String name;
-
-    private Integer publicationYear;
-
-    public Integer getId() {
-        return id;
+1. Create class `Book` in the `org.acme.spring.web` package with the following content:
+    ```
+    package org.acme.spring.web;
+    
+    import javax.persistence.Entity;
+    import javax.persistence.Id;
+    
+    @Entity
+    public class Book {
+    
+        @Id
+        private Integer id;
+    
+        private String name;
+    
+        private Integer publicationYear;
+    
+        public Integer getId() {
+            return id;
+        }
+    
+        public String getName() {
+            return name;
+        }
+    
+        public Integer getPublicationYear() {
+            return publicationYear;
+        }
     }
+    ```
+1. Create a `BookRepository` interface and make it a Spring repository extending the Spring `CrudRepository`
 
-    public String getName() {
-        return name;
+    ```
+    package org.acme.spring.web;
+    
+    import org.springframework.data.repository.CrudRepository;
+    
+    import java.util.List;
+    
+    public interface BookRepostory extends CrudRepository<Book, Integer> {
+    
+        List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
     }
+    
+    ```
+1. Create the `BookController` class in order to expose the BookRepository via REST.
 
-    public Integer getPublicationYear() {
-        return publicationYear;
+    ```
+    package org.acme.spring.web;
+    
+    
+    import org.springframework.web.bind.annotation.*;
+    
+    import java.util.List;
+    
+    @RestController
+    @RequestMapping("/book")
+    public class BookController {
+    
+        private final BookRepository bookRepository;
+    
+        public BookController(BookRepository bookRepository) {
+            this.bookRepository = bookRepository;
+        }
+    
+        @GetMapping
+        public Iterable<Book> findAll() {
+            return bookRepository.findAll();
+        }
     }
-}
-```
-Create a `BookRepository` interface and make it a Spring repository extending the Spring `CrudRepository`
+    ```
 
-```
-package org.acme.spring.web;
+1. Open the `application.properties` file and add database access configuration
 
-import org.springframework.data.repository.CrudRepository;
+    ```
+    quarkus.datasource.url=jdbc:postgresql:quarkus_test
+    quarkus.datasource.driver=org.postgresql.Driver
+    quarkus.datasource.username=quarkus_test
+    quarkus.datasource.password=quarkus_test
+    quarkus.datasource.max-size=8
+    quarkus.datasource.min-size=2
+    
+    ```
 
-import java.util.List;
+1. Add database population script `import.sql` in resources folder with the following content
 
-public interface BookRepostory extends CrudRepository<Book, Integer> {
+    ```
+    INSERT INTO book(id, name, publicationYear) VALUES (1, 'Sapiens' , 2011);
+    INSERT INTO book(id, name, publicationYear) VALUES (2, 'Homo Deus' , 2015);
+    INSERT INTO book(id, name, publicationYear) VALUES (3, 'Enlightenment Now' , 2018);
+    INSERT INTO book(id, name, publicationYear) VALUES (4, 'Factfulness' , 2018);
+    INSERT INTO book(id, name, publicationYear) VALUES (5, 'Sleepwalkers' , 2012);
+    INSERT INTO book(id, name, publicationYear) VALUES (6, 'The Silk Roads' , 2015);
+    
+    ```
 
-    List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
-}
+1. Configure the loading of data adding the following properties in the `application.properties` file
 
-```
+    ```
+    quarkus.hibernate-orm.database.generation=drop-and-create
+    quarkus.hibernate-orm.sql-load-script=import.sql
+    ```
 
-Create the `BookController` class in order to expose the BookRepository via REST.
+1. At last, start a postgresql database by running the following command:
 
-```
-package org.acme.spring.web;
+    ```
+    docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:11.5
+    
+    ```
 
-
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/book")
-public class BookController {
-
-    private final BookRepository bookRepository;
-
-    public BookController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
-
-    @GetMapping
-    public Iterable<Book> findAll() {
-        return bookRepository.findAll();
-    }
-}
-```
-
-Open the `application.properties` file and add database access configuration
-
-```
-quarkus.datasource.url=jdbc:postgresql:quarkus_test
-quarkus.datasource.driver=org.postgresql.Driver
-quarkus.datasource.username=quarkus_test
-quarkus.datasource.password=quarkus_test
-quarkus.datasource.max-size=8
-quarkus.datasource.min-size=2
-
-```
-
-Add database population script `import.sql` in resources folder with the following content
-
-```
-INSERT INTO book(id, name, publicationYear) VALUES (1, 'Sapiens' , 2011);
-INSERT INTO book(id, name, publicationYear) VALUES (2, 'Homo Deus' , 2015);
-INSERT INTO book(id, name, publicationYear) VALUES (3, 'Enlightenment Now' , 2018);
-INSERT INTO book(id, name, publicationYear) VALUES (4, 'Factfulness' , 2018);
-INSERT INTO book(id, name, publicationYear) VALUES (5, 'Sleepwalkers' , 2012);
-INSERT INTO book(id, name, publicationYear) VALUES (6, 'The Silk Roads' , 2015);
-
-```
-
-Configure the loading of data adding the following properties in the `application.properties` file
-
-```
-quarkus.hibernate-orm.database.generation=drop-and-create
-quarkus.hibernate-orm.sql-load-script=import.sql
-```
-
-At last, start a postgresql database by running the following command:
-
-```
-docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:11.5
-
-```
-
-Open browser to http://localhost:8080/book
+1. Open browser to http://localhost:8080/book
 
 ## Add a custom method in the repository
 
-Modify the `BookRepository` to add a custom method allowing retrieve books between publication dates.
-```
-package org.acme.spring.web;
-
-import org.springframework.data.repository.CrudRepository;
-
-import java.util.List;
-
-public interface BookRepository extends CrudRepository<Book, Integer> {
-
-    List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
-}
-
-```
-
-Add the following method to the `BookController`
-
-```
-@GetMapping("year/{lower}/{higher}")
-    public List<Book> findByPublicationYear(@PathVariable Integer lower, @PathVariable Integer higher){
-        return bookRepository.findByPublicationYearBetween(lower,higher);
+1. Modify the `BookRepository` to add a custom method allowing retrieve books between publication dates.
+    ```
+    package org.acme.spring.web;
+    
+    import org.springframework.data.repository.CrudRepository;
+    
+    import java.util.List;
+    
+    public interface BookRepository extends CrudRepository<Book, Integer> {
+    
+        List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
     }
+    
+    ```
 
-```
+1. Add the following method to the `BookController`
 
-Open browser to http://localhost:8080/book/year/2012/2015
+    ```
+    @GetMapping("year/{lower}/{higher}")
+        public List<Book> findByPublicationYear(@PathVariable Integer lower, @PathVariable Integer higher){
+            return bookRepository.findByPublicationYearBetween(lower,higher);
+        }
+    
+    ```
+
+1. Open browser to http://localhost:8080/book/year/2012/2015
 
 ## Add an Exception to customize responses
 
-Add a delete method in the `BookController` as follows:
+1. Add a delete method in the `BookController` as follows:
 
-```
-    @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Integer id){
-            bookRepository.deleteById(id);
-    }
-```
-
-Try to delete the book with `id` 10 by running the following command
-```
- curl -X DELETE localhost:8080/book/10
-```
-We get an `500 Internal Server Error` because any book with id 10 exist.
-
-Create a `MissingBookException` class with following content:
-
-```
-package org.acme.spring.web;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class MissingBookException extends RuntimeException {
-}
-
-```
-
-Use this custom Exception in the delete method in the `BookController`
-```
-@DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Integer id){
-        try {
-            bookRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new MissingBookException();
+    ```
+        @DeleteMapping("/{id}")
+        public void deleteBook(@PathVariable Integer id){
+                bookRepository.deleteById(id);
         }
+    ```
+
+1. Try to delete the book with `id` 10 by running the following command
+    ```
+     curl -X DELETE localhost:8080/book/10
+    ```
+    We get an `500 Internal Server Error` because any book with id 10 exist.
+
+1. Create a `MissingBookException` class with following content:
+
+    ```
+    package org.acme.spring.web;
+    
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.ResponseStatus;
+    
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public class MissingBookException extends RuntimeException {
     }
-```
+    
+    ```
 
-Retry to delete the book with `id` 10 by running the following command
-```
-curl -X DELETE localhost:8080/book/10
-```
+1. Use this custom Exception in the delete method in the `BookController`
+    ```
+    @DeleteMapping("/{id}")
+        public void deleteBook(@PathVariable Integer id){
+            try {
+                bookRepository.deleteById(id);
+            } catch (Exception e) {
+                throw new MissingBookException();
+            }
+        }
+    ```
 
-We get a `Bad Request` response
+1. Retry to delete the book with `id` 10 by running the following command
+    ```
+    http DELETE localhost:8080/book/10
+    ```
+    We get a `Bad Request` response
    ```
    HTTP/1.1 400 Bad Request
    Content-Length: 0
    Content-Type: text/plain
    ```
+## Packaging and running the application
 
+The application can be packaged using `./mvnw package`.
+It produces the `spring-on-quarkus-demo-1.0-SNAPSHOT-runner.jar` file in the `/target` directory.
 
+The application is now runnable using `java -jar target/spring-on-quarkus-demo-1.0-SNAPSHOT-runner.jar`.
+
+## Creating a native executable
+
+You can create a native executable using: `./mvnw package -Pnative`.
+You can then execute your native executable with: `./target/spring-on-quarkus-demo-1.0-SNAPSHOT-runner`
+
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
+Then, build the docker image with `docker build -f src/main/docker/Dockerfile.native -t quarkus/spring-on-quarkus-demo .`
+Finally, run the container using `docker run -i --net=host --rm -p 8080:8080 quarkus/spring-on-quarkus-demo`
+
+If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
 
 
 
