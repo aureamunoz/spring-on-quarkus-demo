@@ -2,7 +2,7 @@
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 This project has been used to present Quarkus in several conferences and meetups.
-The slides are available [here](Descubriendo%20Quarkus%2C%20java%20sub-at%C3%B3mico%20en%20acci%C3%B3n%20-%20Focus%20Spring.pdf).
+The slides are available [here](Madrid%20JUG%20Descubriendo%20Quarkus%2C%20java%20sub-at%C3%B3mico%20en%20acci%C3%B3n.pdf).
 
 This project is the result of following the [Quarkus Spring Web](https://quarkus.io/guides/spring-web) and [Quarkus Spring Data JPA](https://quarkus.io/guides/spring-data-jpa) guides.
 
