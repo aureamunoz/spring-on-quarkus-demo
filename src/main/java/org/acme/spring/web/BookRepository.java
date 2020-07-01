@@ -1,10 +1,10 @@
-package com.example;
+package org.acme.spring.web;
 
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface BookRepostory extends CrudRepository<Book, Integer> {
+public interface BookRepository extends CrudRepository<Book, Integer> {
 
     List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
 }

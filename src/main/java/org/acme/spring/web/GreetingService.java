@@ -1,4 +1,4 @@
-package com.example;
+package org.acme.spring.web;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,6 @@ public class GreetingService {
     }
 
     public Greeting greet(String name){
-        return new Greeting(message + " "+name);
+        return new Greeting(message + " "+ name);
     }
 }

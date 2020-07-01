@@ -1,4 +1,4 @@
-package com.example;
+package org.acme.spring.web;
 
 import org.springframework.web.bind.annotation.*;
 

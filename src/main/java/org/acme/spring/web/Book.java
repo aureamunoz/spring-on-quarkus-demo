@@ -1,4 +1,4 @@
-package com.example;
+package org.acme.spring.web;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

@@ -1,4 +1,4 @@
-package com.example;
+package org.acme.spring.web;
 
 public class Greeting {
 

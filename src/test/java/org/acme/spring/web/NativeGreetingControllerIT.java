@@ -1,4 +1,4 @@
-package com.example;
+package org.acme.spring.web;
 
 import io.quarkus.test.junit.NativeImageTest;
 
