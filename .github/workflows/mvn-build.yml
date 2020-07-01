@@ -19,5 +19,5 @@ jobs:
         with:
           java-version: openjdk11
       - name: Build
-        run: mvn clean install
+        run: mvn clean install -DskipTests
 
