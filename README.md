@@ -13,7 +13,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 Generate project by running the following command
 ```bash
-mvn io.quarkus:quarkus-maven-plugin:1.7.2.Final:create \
+mvn io.quarkus:quarkus-maven-plugin:1.7.3.Final:create \
     -DprojectGroupId=org.acme.spring.web \
     -DprojectArtifactId=spring-on-quarkus-demo \
     -DclassName="org.acme.spring.web.GreetingController" \
