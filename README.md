@@ -241,7 +241,6 @@ You can also add the extensions to your project by running the following command
     
     public interface BookRepostory extends CrudRepository<Book, Integer> {
     
-        List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
     }
     
     ```
