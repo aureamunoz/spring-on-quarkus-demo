@@ -13,7 +13,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 Generate project by running the following command
 ```bash
-mvn io.quarkus:quarkus-maven-plugin:1.12.0.Final:create \
+mvn io.quarkus:quarkus-maven-plugin:1.12.1.Final:create \
     -DprojectGroupId=org.acme.spring.web \
     -DprojectArtifactId=spring-on-quarkus-demo \
     -DclassName="org.acme.spring.web.GreetingController" \
@@ -274,12 +274,12 @@ You can also add the extensions to your project by running the following command
 1. Open the `application.properties` file and add database access configuration
 
     ```
-    quarkus.datasource.url=jdbc:postgresql:quarkus_test
-    quarkus.datasource.driver=org.postgresql.Driver
+    quarkus.datasource.jdbc.url=jdbc:postgresql:quarkus_test
+    quarkus.datasource.db-kind=postgresql
     quarkus.datasource.username=quarkus_test
     quarkus.datasource.password=quarkus_test
-    quarkus.datasource.max-size=8
-    quarkus.datasource.min-size=2
+    quarkus.datasource.jdbc.min-size=2
+    quarkus.datasource.jdbc.max-size=8
     
     ```
 
@@ -396,14 +396,17 @@ You can also add the extensions to your project by running the following command
 ## Packaging and running the application
 
 The application can be packaged using `./mvnw package`.
-It produces the `spring-on-quarkus-demo-1.0-SNAPSHOT-runner.jar` file in the `/target` directory.
+It produces several outputs:
+- the `spring-on-quarkus-demo-1.0.0-SNAPSHOT.jar` file in the `/target` directory.
+- the quarkus-app directory which contains the `quarkus-run.jar`
 
-The application is now runnable using `java -jar target/spring-on-quarkus-demo-1.0-SNAPSHOT-runner.jar`.
+The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+
 
 ## Creating a native executable
 
 You can create a native executable using: `./mvnw package -Pnative`.
-You can then execute your native executable with: `./target/spring-on-quarkus-demo-1.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/spring-on-quarkus-demo-1.0.0-SNAPSHOT-runner`
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
 Then, build the docker image with `docker build -f src/main/docker/Dockerfile.native -t quarkus/spring-on-quarkus-demo .`
