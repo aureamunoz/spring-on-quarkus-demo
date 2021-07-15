@@ -13,7 +13,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 Generate project by running the following command
 ```bash
-mvn io.quarkus:quarkus-maven-plugin:1.12.1.Final:create \
+mvn io.quarkus:quarkus-maven-plugin:2.0.2.Final:create \
     -DprojectGroupId=org.acme.spring.web \
     -DprojectArtifactId=spring-on-quarkus-demo \
     -DclassName="org.acme.spring.web.GreetingController" \
@@ -406,7 +406,7 @@ The application is now runnable using `java -jar target/quarkus-app/quarkus-run.
 ## Creating a native executable
 
 You can create a native executable using: `./mvnw package -Pnative`.
-You can then execute your native executable with: `./target/spring-on-quarkus-demo-1.0.0-SNAPSHOT-runner`
+You can then execute your native executable with: `./target/spring-on-quarkus-demo-1.0-SNAPSHOT-runner`
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: `./mvnw package -Pnative -Dquarkus.native.container-build=true`.
 Then, build the docker image with `docker build -f src/main/docker/Dockerfile.native -t quarkus/spring-on-quarkus-demo .`
