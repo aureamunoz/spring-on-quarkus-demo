@@ -2,7 +2,6 @@
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 This project has been used to present Quarkus in several conferences and meetups.
-The slides are available [here](Madrid%20JUG%20Descubriendo%20Quarkus%2C%20java%20sub-at%C3%B3mico%20en%20acci%C3%B3n.pdf).
 
 This project is the result of following the [Quarkus Spring Web](https://quarkus.io/guides/spring-web) and [Quarkus Spring Data JPA](https://quarkus.io/guides/spring-data-jpa) guides.
 
@@ -305,7 +304,7 @@ You can also add the extensions to your project by running the following command
 1. At last, start a postgresql database by running the following command:
 
     ```
-    docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:11.5
+    docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:14.5
     
     ```
 
