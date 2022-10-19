@@ -116,7 +116,7 @@ mvn compile quarkus:dev
     
         @GetMapping
         public Greeting hello(@RequestParam(defaultValue = "world")String name) {
-            return greetingService.greeting("hello "+name);
+            return greetingService.greet("hello "+name);
         }
     }
     ```    
@@ -281,6 +281,8 @@ You can also add the extensions to your project by running the following command
     quarkus.datasource.jdbc.max-size=8
     
     ```
+   
+Note that this step is optional in `dev` mode.
 
 1. Add database population script `import.sql` in resources folder with the following content
 
@@ -300,6 +302,8 @@ You can also add the extensions to your project by running the following command
     quarkus.hibernate-orm.database.generation=drop-and-create
     quarkus.hibernate-orm.sql-load-script=import.sql
     ```
+   
+Note that this step is optional in `dev` mode.
 
 1. At last, start a postgresql database by running the following command:
 
@@ -307,6 +311,8 @@ You can also add the extensions to your project by running the following command
     docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:14.5
     
     ```
+
+Note that this step is optional in `dev` mode.
 
 1. Open browser to http://localhost:8080/book
 
@@ -412,6 +418,3 @@ Then, build the docker image with `docker build -f src/main/docker/Dockerfile.na
 Finally, run the container using `docker run -i --net=host --rm -p 8080:8080 quarkus/spring-on-quarkus-demo`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image.
-
-
-

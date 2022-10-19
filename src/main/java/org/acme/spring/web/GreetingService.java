@@ -8,11 +8,11 @@ public class GreetingService {
 
     private String message;
 
-    public GreetingService(@Value("${greeting.message}") String message) {
+    public GreetingService(@Value("${greeting.message}")String message) {
         this.message = message;
     }
 
     public Greeting greet(String name){
-        return new Greeting(message + " "+ name);
+        return new Greeting(message + " " + name);
     }
 }
