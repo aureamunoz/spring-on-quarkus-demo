@@ -10,19 +10,12 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 ## Spring on Quarkus Live coding
 ### Project generation and run
 
-Generate project by running the following command
-```bash
-mvn io.quarkus:quarkus-maven-plugin:2.16.4.Final:create \
-    -DprojectGroupId=org.acme.spring.web \
-    -DprojectArtifactId=spring-on-quarkus-demo \
-    -DclassName="org.acme.spring.web.GreetingController" \
-    -Dpath="/greeting" \
-    -Dextensions="spring-web"
+Generate project navigating to this url https://code.quarkus.io/?a=spring-with-quarkus&e=spring-web&e=spring-data-jpa&e=jdbc-postgresql&extension-search=origin:platform%20post
+Download the zip and unzip it. 
 
-```
 Navigate to the directory and launch the application
 ```bash
-cd spring-on-quarkus-demo
+cd spring-with-quarkus
 mvn compile quarkus:dev
 ```
 1. Open browser to http://localhost:8080
@@ -202,117 +195,72 @@ You can also add the extensions to your project by running the following command
 1. Create class `Book` in the `org.acme.spring.web` package with the following content:
     ```
     package org.acme.spring.web;
-    
-    import javax.persistence.Entity;
-    import javax.persistence.Id;
-    
+
+    import io.quarkus.hibernate.orm.panache.PanacheEntity;
+    import jakarta.persistence.Entity;
+       
     @Entity
-    public class Book {
-    
-        @Id
-        private Integer id;
-    
-        private String name;
-    
-        private Integer publicationYear;
-    
-        public Integer getId() {
-            return id;
-        }
-    
-        public String getName() {
-            return name;
-        }
-    
-        public Integer getPublicationYear() {
-            return publicationYear;
-        }
+    public class Book extends PanacheEntity {
+       
+    public String name;
+       
+    public Integer publicationYear;
+       
     }
     ```
-1. Create a `BookRepository` interface and make it a Spring repository extending the Spring `CrudRepository`
+   1. Create a `BookRepository` interface and make it a Spring repository extending the Spring `CrudRepository`
 
-    ```
-    package org.acme.spring.web;
+       ```
+       package org.acme.spring.web;
     
-    import org.springframework.data.repository.CrudRepository;
+       import org.springframework.data.repository.CrudRepository;
     
-    import java.util.List;
+       import java.util.List;
     
-    public interface BookRepostory extends CrudRepository<Book, Integer> {
+       public interface BookRepostory extends CrudRepository<Book, Long> {
     
-    }
+       }
     
-    ```
-1. Create the `BookController` class in order to expose the BookRepository via REST.
+       ```
+      1. Create the `BookController` class in order to expose the BookRepository via REST.
 
-    ```
-    package org.acme.spring.web;
+          ```
+          package org.acme.spring.web;
     
     
-    import org.springframework.web.bind.annotation.*;
+          import org.springframework.web.bind.annotation.*;
     
-    import java.util.List;
+          import java.util.List;
     
-    @RestController
-    @RequestMapping("/book")
-    public class BookController {
+          @RestController
+          @RequestMapping("/book")
+          public class BookController {
     
-        private final BookRepository bookRepository;
+              @Autowired
+              private BookRepository bookRepository;
     
-        public BookController(BookRepository bookRepository) {
-            this.bookRepository = bookRepository;
-        }
-    
-        @GetMapping
-        public Iterable<Book> findAll() {
-            return bookRepository.findAll();
-        }
-    }
-    ```
+              @GetMapping
+              public Iterable<Book> findAll() {
+                  return bookRepository.findAll();
+              }
+          }
+          ```
 
-1. Open the `application.properties` file and add database access configuration
+### Set up the data base and some data in it
 
-    ```
-    quarkus.datasource.jdbc.url=jdbc:postgresql:quarkus_test
-    quarkus.datasource.db-kind=postgresql
-    quarkus.datasource.username=quarkus_test
-    quarkus.datasource.password=quarkus_test
-    quarkus.datasource.jdbc.min-size=2
-    quarkus.datasource.jdbc.max-size=8
-    
-    ```
-   
-Note that this step is optional in `dev` mode.
+As Quarkus supports the automatic provisioning of unconfigured services in development and test mode, we don't need at the moment to configure anything regarding the database access.
+Quarkus will automatically start a Postgresql service and wire up your application to use this service.
+However, this database is empty. To add some books, follow the next step:
 
 1. Add database population script `import.sql` in resources folder with the following content
-
-    ```
+````properties
     INSERT INTO book(id, name, publicationYear) VALUES (1, 'Sapiens' , 2011);
     INSERT INTO book(id, name, publicationYear) VALUES (2, 'Homo Deus' , 2015);
     INSERT INTO book(id, name, publicationYear) VALUES (3, 'Enlightenment Now' , 2018);
     INSERT INTO book(id, name, publicationYear) VALUES (4, 'Factfulness' , 2018);
     INSERT INTO book(id, name, publicationYear) VALUES (5, 'Sleepwalkers' , 2012);
     INSERT INTO book(id, name, publicationYear) VALUES (6, 'The Silk Roads' , 2015);
-    
-    ```
-
-1. Configure the loading of data adding the following properties in the `application.properties` file
-
-    ```
-    quarkus.hibernate-orm.database.generation=drop-and-create
-    quarkus.hibernate-orm.sql-load-script=import.sql
-    ```
-   
-Note that this step is optional in `dev` mode.
-
-1. At last, start a postgresql database by running the following command:
-
-    ```
-    docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:14.5
-    
-    ```
-
-Note that this step is optional in `dev` mode.
+````
 
 1. Open browser to http://localhost:8080/book
 
@@ -398,7 +346,37 @@ Note that this step is optional in `dev` mode.
    Content-Length: 0
    Content-Type: text/plain
    ```
+
+
 ## Packaging and running the application
+### Database configuration for PROD environment
+
+Open the `application.properties` file and add database access configuration
+````properties
+%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/quarkus-library
+%prod.quarkus.datasource.username=book
+%prod.quarkus.datasource.password=book
+
+%prod.quarkus.datasource.jdbc.min-size=2
+%prod.quarkus.datasource.jdbc.max-size=8
+````
+
+1. Configure the loading of data adding the following properties in the `application.properties` file
+
+```properties
+%prod.quarkus.hibernate-orm.sql-load-script=import.sql
+%prod.quarkus.hibernate-orm.database.generation=drop-and-create
+```
+
+1. At last, start a postgresql database by running the following command:
+
+```bash
+docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name quarkus-database -e POSTGRES_USER=book -e POSTGRES_PASSWORD=book -e POSTGRES_DB=quarkus-library -p 5432:5432 postgres:14.5
+```
+
+As already mentioned, these steps are optional in `dev` and `test` modes.
+
+1. Open browser to http://localhost:8080/book
 
 The application can be packaged using `./mvnw package`.
 It produces several outputs:

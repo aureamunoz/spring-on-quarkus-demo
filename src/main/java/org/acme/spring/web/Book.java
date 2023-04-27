@@ -1,27 +1,13 @@
 package org.acme.spring.web;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.Entity;
 
 @Entity
-public class Book {
+public class Book extends PanacheEntity {
 
-    @Id
-    private Integer id;
+    public String name;
 
-    private String name;
+    public Integer publicationYear;
 
-    private Integer publicationYear;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getPublicationYear() {
-        return publicationYear;
-    }
 }

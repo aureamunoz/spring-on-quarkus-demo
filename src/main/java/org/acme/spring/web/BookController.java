@@ -1,6 +1,7 @@
 package org.acme.spring.web;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,11 +14,8 @@ import java.util.List;
 @RequestMapping("/book")
 public class BookController {
 
-    private final BookRepository bookRepository;
-
-    public BookController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+    @Autowired
+    private BookRepository bookRepository;
 
     @GetMapping
     public Iterable<Book> findAll(){
@@ -30,7 +28,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Integer id){
+    public void deleteBook(@PathVariable Long id){
         try {
             bookRepository.deleteById(id);
         } catch (Exception e) {
