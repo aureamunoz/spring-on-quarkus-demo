@@ -217,7 +217,7 @@ You can also add the extensions to your project by running the following command
     
        import java.util.List;
     
-       public interface BookRepostory extends CrudRepository<Book, Long> {
+       public interface BookRepository extends CrudRepository<Book, Long> {
     
        }
     
@@ -274,7 +274,7 @@ However, this database is empty. To add some books, follow the next step:
     
     import java.util.List;
     
-    public interface BookRepository extends CrudRepository<Book, Integer> {
+    public interface BookRepository extends CrudRepository<Book, Long> {
     
         List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
     }
@@ -299,7 +299,7 @@ However, this database is empty. To add some books, follow the next step:
 
     ```
         @DeleteMapping("/{id}")
-        public void deleteBook(@PathVariable Integer id){
+        public void deleteBook(@PathVariable Long id){
                 bookRepository.deleteById(id);
         }
     ```
@@ -327,7 +327,7 @@ However, this database is empty. To add some books, follow the next step:
 1. Use this custom Exception in the delete method in the `BookController`
     ```
     @DeleteMapping("/{id}")
-        public void deleteBook(@PathVariable Integer id){
+        public void deleteBook(@PathVariable Long id){
             try {
                 bookRepository.deleteById(id);
             } catch (Exception e) {

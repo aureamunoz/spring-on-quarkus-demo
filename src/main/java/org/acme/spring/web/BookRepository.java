@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface BookRepository extends CrudRepository<Book, Long> {
 
-    List<Book> findByPublicationYearBetween(Integer lower,Integer higher);
+    List<Book> findByPublicationYearBetween(Integer lower, Integer higher);
 }

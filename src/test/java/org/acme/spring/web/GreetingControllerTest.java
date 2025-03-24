@@ -11,11 +11,7 @@ public class GreetingControllerTest {
 
     @Test
     public void testHelloEndpoint() {
-        given()
-          .when().get("/greeting")
-          .then()
-             .statusCode(200)
-             .body(is("{\"message\":\"Hola world\"}"));
+        given().when().get("/greeting").then().statusCode(200).body(is("{\"message\":\"Hola world\"}"));
     }
 
 }
