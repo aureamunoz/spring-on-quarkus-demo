@@ -10,7 +10,7 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 ## Spring on Quarkus Live coding
 ### Project generation and run
 
-Generate project navigating to this url https://code.quarkus.io/?a=spring-with-quarkus&e=spring-web&e=spring-data-jpa&e=jdbc-postgresql&extension-search=origin:platform%20post
+Generate project navigating to this url https://code.quarkus.io/?a=spring-with-quarkus&e=spring-web&e=spring-data-jpa&e=smallrye-openapi&e=jdbc-postgresql&extension-search=postgre
 Download the zip and unzip it. 
 
 Navigate to the directory and launch the application
@@ -260,6 +260,7 @@ However, this database is empty. To add some books, follow the next step:
     INSERT INTO book(id, name, publicationYear) VALUES (4, 'Factfulness' , 2018);
     INSERT INTO book(id, name, publicationYear) VALUES (5, 'Sleepwalkers' , 2012);
     INSERT INTO book(id, name, publicationYear) VALUES (6, 'The Silk Roads' , 2015);
+    ALTER SEQUENCE book_seq RESTART WITH 7;
 ````
 
 1. Open browser to http://localhost:8080/book

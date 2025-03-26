@@ -4,3 +4,4 @@ INSERT INTO book(id, name, publicationYear) VALUES (3, 'Enlightenment Now' , 201
 INSERT INTO book(id, name, publicationYear) VALUES (4, 'Factfulness' , 2018);
 INSERT INTO book(id, name, publicationYear) VALUES (5, 'Sleepwalkers' , 2012);
 INSERT INTO book(id, name, publicationYear) VALUES (6, 'The Silk Roads' , 2015);
+ALTER SEQUENCE book_seq RESTART WITH 7;
